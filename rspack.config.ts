@@ -26,8 +26,11 @@ export default defineConfig({
         }),
     ],
     output: {
-        filename: "bundle.js",
+        filename: "index.js",
         path: import.meta.dirname + "/dist",
+        library: {
+            type: "module",
+        },
     },
     resolve: {
         extensions: [".ts", ".js"],
