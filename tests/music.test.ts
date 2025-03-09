@@ -1,32 +1,50 @@
 import { Decrypter } from "../src";
 import { expect, test } from "bun:test";
 
+const oggSignature = "OggS";
+
 test("decryptMV", async () => {
-    const trackPath = String.raw`C:\Program Files (x86)\Steam\steamapps\common\Fear & Hunger 2 Termina\www\audio\bgm\all_work_no_play.rpgmvo`;
+    const trackPath = "./tests/mv_audio.rpgmvo";
+
     const decrypter = new Decrypter("d41d8cd98f00b204e9800998ecf8427e");
-    const decrypted = decrypter.decryptFile(await Bun.file(trackPath).arrayBuffer(), false);
+    const decrypted = decrypter.decrypt(await Bun.file(trackPath).arrayBuffer(), false);
 
-    const oggSignature = "OggS";
     const decryptedSignature = new TextDecoder("utf8").decode(decrypted.slice(0, 4));
-
     expect(decryptedSignature).toBe(oggSignature);
 });
 
 test("encryptMV", async () => {
-    const trackPath = String.raw`C:\Program Files (x86)\Steam\steamapps\common\Fear & Hunger 2 Termina\www\audio\bgm\all_work_no_play.rpgmvo`;
+    const trackPath = "./tests/mv_audio.rpgmvo";
+
     const decrypter = new Decrypter("d41d8cd98f00b204e9800998ecf8427e");
-    const decrypted = decrypter.decryptFile(await Bun.file(trackPath).arrayBuffer(), false);
+    const decrypted = decrypter.decrypt(await Bun.file(trackPath).arrayBuffer(), false);
 
-    const encrypted = decrypter.encryptFile(decrypted);
+    const encrypted = decrypter.encrypt(decrypted);
+    const decryptedAgain = decrypter.decrypt(encrypted, false);
 
-    // decrypting again to validate the file
-    const decryptedAgain = decrypter.decryptFile(encrypted, false);
-
-    const oggSignature = "OggS";
     const decryptedSignature = new TextDecoder("utf8").decode(decryptedAgain.slice(0, 4));
     expect(decryptedSignature).toBe(oggSignature);
 });
 
-test("decryptMZ", () => {});
+test("decryptMZ", async () => {
+    const trackPath = "./tests/mz_audio.ogg_";
 
-test("encryptMZ", () => {});
+    const decrypter = new Decrypter("d41d8cd98f00b204e9800998ecf8427e");
+    const decrypted = decrypter.decrypt(await Bun.file(trackPath).arrayBuffer(), false);
+
+    const decryptedSignature = new TextDecoder("utf8").decode(decrypted.slice(0, 4));
+    expect(decryptedSignature).toBe(oggSignature);
+});
+
+test("encryptMZ", async () => {
+    const trackPath = "./tests/mz_audio.ogg_";
+
+    const decrypter = new Decrypter("d41d8cd98f00b204e9800998ecf8427e");
+    const decrypted = decrypter.decrypt(await Bun.file(trackPath).arrayBuffer(), false);
+
+    const encrypted = decrypter.encrypt(decrypted);
+    const decryptedAgain = decrypter.decrypt(encrypted, false);
+
+    const decryptedSignature = new TextDecoder("utf8").decode(decryptedAgain.slice(0, 4));
+    expect(decryptedSignature).toBe(oggSignature);
+});
