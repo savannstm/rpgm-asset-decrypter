@@ -56,39 +56,6 @@ export class Decrypter {
         return fakeHeader;
     }
 
-    private restorePNGHeader(arrayBuffer: ArrayBuffer): ArrayBuffer {
-        const pngStartHeader = this.getPNGHeader(this.headerLength);
-        const finalHeaderLength = pngStartHeader.length;
-
-        const actualData = arrayBuffer.slice(finalHeaderLength * 2, arrayBuffer.byteLength);
-        const tempArray = new Uint8Array(actualData.byteLength + finalHeaderLength);
-
-        tempArray.set(pngStartHeader, 0);
-        tempArray.set(new Uint8Array(actualData), finalHeaderLength);
-
-        return tempArray.buffer;
-    }
-
-    private decrypt(arrayBuffer: ArrayBuffer): ArrayBuffer {
-        const actualData = arrayBuffer.slice(this.headerLength, arrayBuffer.byteLength);
-        return this.decryptBytes(actualData);
-    }
-
-    private encrypt(arrayBuffer: ArrayBuffer): ArrayBuffer {
-        const encryptedBuffer = this.decryptBytes(arrayBuffer);
-        const fakeHeader = this.buildFakeHeader();
-        const tempArray = new Uint8Array(encryptedBuffer.byteLength + this.headerLength);
-
-        tempArray.set(fakeHeader, 0);
-        tempArray.set(new Uint8Array(encryptedBuffer), this.headerLength);
-
-        if (!this.verifyFakeHeader(new Uint8Array(tempArray.buffer, 0, this.headerLength))) {
-            throw new Error("Failed to create valid header");
-        }
-
-        return tempArray.buffer;
-    }
-
     private decryptBytes(arrayBuffer: ArrayBuffer): ArrayBuffer {
         const decrypted = new Uint8Array(arrayBuffer);
         const limit = Math.min(this.headerLength, this.keyArray.length);
@@ -219,25 +186,45 @@ export class Decrypter {
 
     public restoreHeader(fileContent: ArrayBuffer, isImage: boolean): ArrayBuffer {
         this.setKey(fileContent, isImage);
-        return this.restorePNGHeader(fileContent);
+        const pngStartHeader = this.getPNGHeader(this.headerLength);
+        const finalHeaderLength = pngStartHeader.length;
+
+        const actualData = fileContent.slice(finalHeaderLength * 2, fileContent.byteLength);
+        const tempArray = new Uint8Array(actualData.byteLength + finalHeaderLength);
+
+        tempArray.set(pngStartHeader, 0);
+        tempArray.set(new Uint8Array(actualData), finalHeaderLength);
+
+        return tempArray.buffer;
     }
 
     /**
      * @param {ArrayBuffer} fileContent The data of RPG Maker file.
-     * @param {boolean} isImage Whether passed data is related to image (`.rpgmvp`, `.png_`) or audio (`.rpgmvo`, `.ogg_`).
+     * @param {boolean} isImage Whether passed data is related to image (`.rpgmvp`, `.png_`) or audio (`.rpgmvo`, `.rpgmvm`, `.ogg_`, `.m4a_`).
      * @returns {ArrayBuffer} Decrypted data.
      */
-    public decryptFile(fileContent: ArrayBuffer, isImage: boolean): ArrayBuffer {
+    public decrypt(fileContent: ArrayBuffer, isImage: boolean): ArrayBuffer {
         this.setKey(fileContent, isImage);
-        return this.decrypt(fileContent);
+        return this.decryptBytes(fileContent.slice(this.headerLength, fileContent.byteLength));
     }
 
     /**
      * This function needs decrypter to have a key, which you can fetch from `System.json` file or by calling `Decrypter.setKey()` with the data from encrypted file.
-     * @param {ArrayBuffer} fileContent The data of `.png` or `.ogg` file.
+     * @param {ArrayBuffer} fileContent The data of `.png`, `.ogg` or `.m4a_` file.
      * @returns {ArrayBuffer} Encrypted data.
      */
-    public encryptFile(fileContent: ArrayBuffer): ArrayBuffer {
-        return this.encrypt(fileContent);
+    public encrypt(fileContent: ArrayBuffer): ArrayBuffer {
+        const encryptedBuffer = this.decryptBytes(fileContent);
+        const fakeHeader = this.buildFakeHeader();
+        const tempArray = new Uint8Array(encryptedBuffer.byteLength + this.headerLength);
+
+        tempArray.set(fakeHeader, 0);
+        tempArray.set(new Uint8Array(encryptedBuffer), this.headerLength);
+
+        if (!this.verifyFakeHeader(new Uint8Array(tempArray.buffer, 0, this.headerLength))) {
+            throw new Error("Failed to create valid header");
+        }
+
+        return tempArray.buffer;
     }
 }
