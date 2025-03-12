@@ -16,7 +16,7 @@ test("decryptMV", async () => {
     const trackPath = "./tests/mv_sprite.rpgmvp";
 
     const decrypter = new Decrypter("d41d8cd98f00b204e9800998ecf8427e");
-    const decrypted = decrypter.decrypt(await Bun.file(trackPath).arrayBuffer(), false);
+    const decrypted = decrypter.decrypt(await Bun.file(trackPath).arrayBuffer());
 
     expect(await isValidPng(decrypted)).toBeTrue();
 });
@@ -25,10 +25,10 @@ test("encryptMV", async () => {
     const trackPath = "./tests/mv_sprite.rpgmvp";
 
     const decrypter = new Decrypter("d41d8cd98f00b204e9800998ecf8427e");
-    const decrypted = decrypter.decrypt(await Bun.file(trackPath).arrayBuffer(), false);
+    const decrypted = decrypter.decrypt(await Bun.file(trackPath).arrayBuffer());
 
     const encrypted = decrypter.encrypt(decrypted);
-    const decryptedAgain = decrypter.decrypt(encrypted, false);
+    const decryptedAgain = decrypter.decrypt(encrypted);
 
     expect(await isValidPng(decryptedAgain)).toBeTrue();
 });
@@ -37,7 +37,7 @@ test("decryptMZ", async () => {
     const trackPath = "./tests/mz_sprite.png_";
 
     const decrypter = new Decrypter("d41d8cd98f00b204e9800998ecf8427e");
-    const decrypted = decrypter.decrypt(await Bun.file(trackPath).arrayBuffer(), true);
+    const decrypted = decrypter.decrypt(await Bun.file(trackPath).arrayBuffer());
 
     expect(await isValidPng(decrypted)).toBeTrue();
 });
@@ -46,10 +46,10 @@ test("encryptMZ", async () => {
     const trackPath = "./tests/mz_sprite.png_";
 
     const decrypter = new Decrypter("d41d8cd98f00b204e9800998ecf8427e");
-    const decrypted = decrypter.decrypt(await Bun.file(trackPath).arrayBuffer(), true);
+    const decrypted = decrypter.decrypt(await Bun.file(trackPath).arrayBuffer());
 
     const encrypted = decrypter.encrypt(decrypted);
-    const decryptedAgain = decrypter.decrypt(encrypted, true);
+    const decryptedAgain = decrypter.decrypt(encrypted);
 
     expect(await isValidPng(decryptedAgain)).toBeTrue();
 });
