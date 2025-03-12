@@ -1,43 +1,87 @@
+// @ts-check
+
 import { defineConfig } from "@rspack/cli";
 import ESLintPlugin from "eslint-webpack-plugin";
+import path from "path";
 
-export default defineConfig({
-    entry: "./src/index.ts",
-    module: {
-        rules: [
-            {
-                test: /\.ts$/,
-                exclude: [/node_modules/],
-                loader: "builtin:swc-loader",
-                options: {
-                    jsc: {
-                        parser: {
-                            syntax: "typescript",
+export default defineConfig([
+    // ES Module output
+    {
+        entry: "./src/index.ts",
+        module: {
+            rules: [
+                {
+                    test: /\.ts$/,
+                    exclude: [/node_modules/],
+                    loader: "builtin:swc-loader",
+                    options: {
+                        jsc: {
+                            parser: {
+                                syntax: "typescript",
+                            },
                         },
                     },
+                    type: "javascript/auto",
                 },
-                type: "javascript/auto",
-            },
-        ],
-    },
-    plugins: [
-        new ESLintPlugin({
-            extensions: ["ts"],
-        }),
-    ],
-    output: {
-        filename: "index.js",
-        path: import.meta.dirname + "/dist",
-        library: {
-            type: "module",
+            ],
         },
+        plugins: [
+            new ESLintPlugin({
+                extensions: ["ts"],
+            }),
+        ],
+        output: {
+            filename: "index.mjs",
+            path: path.resolve(process.cwd(), "dist"),
+            library: {
+                type: "module",
+            },
+        },
+        resolve: {
+            extensions: [".ts", ".js"],
+        },
+        experiments: {
+            outputModule: true,
+        },
+        mode: "production",
+        externalsType: "module",
     },
-    resolve: {
-        extensions: [".ts", ".js"],
+    // CommonJS output
+    {
+        entry: "./src/index.ts",
+        module: {
+            rules: [
+                {
+                    test: /\.ts$/,
+                    exclude: [/node_modules/],
+                    loader: "builtin:swc-loader",
+                    options: {
+                        jsc: {
+                            parser: {
+                                syntax: "typescript",
+                            },
+                        },
+                    },
+                    type: "javascript/auto",
+                },
+            ],
+        },
+        plugins: [
+            new ESLintPlugin({
+                extensions: ["ts"],
+            }),
+        ],
+        output: {
+            filename: "index.cjs",
+            path: path.resolve(process.cwd(), "dist"),
+            library: {
+                type: "commonjs2",
+            },
+        },
+        resolve: {
+            extensions: [".ts", ".js"],
+        },
+        mode: "production",
+        externalsType: "commonjs",
     },
-    experiments: {
-        outputModule: true, // Enables ESM output for libraries
-    },
-    mode: "production",
-    externalsType: "module",
-});
+]);
