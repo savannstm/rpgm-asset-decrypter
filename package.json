@@ -2,35 +2,47 @@
     "name": "rpgm-asset-decrypter",
     "type": "module",
     "version": "1.0.0",
+    "author": "savannstm <savannstm@gmail.com>",
+    "description": "RPG Maker MV/MZ asset decrypter, that can be safely used both in browser and Node.js.",
+    "license": "MIT",
+    "keywords": [
+        "rpgmaker",
+        "rpg-maker",
+        "decrypter",
+        "assets"
+    ],
     "scripts": {
-        "build": "rspack build && tsc --emitDeclarationOnly"
+        "build": "rspack build && tsc --emitDeclarationOnly",
+        "prepublish": "bun run build"
     },
-    "module": "src/index.ts",
+    "main": "dist/index.cjs",
+    "module": "dist/index.cjs",
+    "types": "dist/types/index.d.ts",
+    "exports": {
+        "import": "dist/index.mjs",
+        "require": "dist/index.cjs",
+        "types": "dist/types/index.d.ts"
+    },
+    "files": [
+        "dist",
+        "README.md",
+        "LICENSE.md",
+        "package.json"
+    ],
     "devDependencies": {
         "@eslint/js": "9.22.0",
-        "@rspack/cli": "1.2.7",
-        "@rspack/core": "1.2.7",
-        "@types/bun": "1.2.4",
+        "@rspack/cli": "1.2.8",
+        "@rspack/core": "1.2.8",
+        "@types/bun": "1.2.5",
         "@types/pngjs": "6.0.5",
         "eslint": "9.22.0",
         "eslint-webpack-plugin": "5.0.0",
+        "jiti": "2.4.2",
         "pngjs": "7.0.0",
         "prettier": "3.5.3",
-        "typescript-eslint": "8.26.0"
+        "typescript-eslint": "8.26.1"
     },
     "peerDependencies": {
         "typescript": "5.8.2"
-    },
-    "main": "dist/index.js",
-    "types": "dist/types/index.d.ts",
-    "exports": {
-        "import": "./dist/index.js",
-        "types": "./dist/types/index.d.ts"
-    },
-    "files": [
-        "./dist",
-        "./README.md",
-        "./LICENSE.md",
-        "./package.json"
-    ]
+    }
 }
