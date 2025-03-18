@@ -25,7 +25,7 @@ const data = buf.buffer;
 
 // For images, decrypter automatically determines the key.
 // For audio, read `encryptionKey` property from `System.json` and pass it to `Decrypter` constructor.
-const decrypted = decrypter.decrypt(data, true);
+const decrypted = decrypter.decrypt(data);
 writeFileSync("./decrypted-picture.png", decrypted);
 ```
 
