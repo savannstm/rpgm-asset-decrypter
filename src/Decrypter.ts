@@ -40,10 +40,20 @@ export class Decrypter {
     }
 
     /**
+     * Returns the decrypter's key.
+     *
+     * Falls back to empty string if key is not set.
+     */
+    public getKey(): string {
+        return this.key ?? "";
+    }
+
+    /**
      * @param key {string} Sets the key of decrypter to provided string.
      */
     public setKeyString(key: string) {
         this.key = key;
+        this.keyArray = this.splitEncryptionCode();
     }
 
     /**
