@@ -1,7 +1,7 @@
 {
     "name": "rpgm-asset-decrypter",
     "type": "module",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "author": "savannstm <savannstm@gmail.com>",
     "description": "RPG Maker MV/MZ asset decrypter, that can be safely used both in browser and Node.js.",
     "license": "MIT",
